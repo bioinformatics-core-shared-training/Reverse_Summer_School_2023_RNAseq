@@ -1,0 +1,607 @@
+---
+title: "Introduction to Differential Gene Expression Analysis with Bulk RNAseq"
+date: "September 2023"
+output:
+  ioslides_presentation:
+    css: css/stylesheet.css
+    logo: images/CRUK_Cambridge_Institute.png
+    smaller: yes
+    widescreen: yes
+  beamer_presentation: default
+---
+
+## HTS Applications - Overview
+
+<div style="width: 28%; 
+    float: left;
+    border-style: solid; 
+    border-width: 1px;
+    border-radius: 28px; 
+    padding: 20px;
+    display: block;
+    height: 330px;
+    margin-top: 20px">
+<div style="text-align: center;">
+<span style="color: #2e2892;">**DNA Sequencing**</span>
+</div>
+
+* Genome Assembly
+    
+* SNPs/SVs/CNVs
+    
+* DNA methylation
+    
+* DNA-protein interactions (ChIPseq)
+
+* Chromatin Modification (ATAC-seq/ChIPseq)
+
+</div>
+
+<div style="width: 28%; 
+    float: left;
+    border-style: solid; 
+    border-width: 4px;
+    border-radius: 28px; 
+    border-color: #2e3192;
+    padding: 20px;
+    display: block;
+    height: 330px;
+    margin-left: 1.6%;
+    margin-top: 20px">
+<div style="text-align: center;">
+<a href="https://emea.illumina.com/content/dam/illumina-marketing/documents/applications/ngs-library-prep/for-all-you-seq-rna.pdf" style="color: #2e2892;">**RNA Sequencing**</a>
+</div>
+
+* Transcriptome Assembly
+
+* **Differential Gene Expression**
+
+* Fusion Genes
+
+* Splice variants
+
+* SNP calling
+
+</div>
+
+<div style="width: 28%; 
+    float: right;
+    border-style: solid; 
+    border-width: 1px;
+    border-radius: 28px; 
+    padding: 20px;
+    display: block;
+    height: 330px;
+    margin-top: 20px">
+<div style="text-align: center;">
+<span style="color: #2e2892;">**Single-Cell**</span>
+</div>
+
+* RNA/DNA
+
+* Low-level RNA/DNA detection
+
+* Cell-type classification
+
+* Dissection of heterogenous cell populations
+
+</div>
+
+## RNAseq Workflow
+
+
+<div style="width: 40%; 
+            float: left"> 
+
+<div class="wkfthree2">
+<span style="color: #2e2892;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">  
+            
+<img src="images/RNAseq_WorkFlow.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+<div style="text-align: right">
+<p style="font-size: 14px">Image adapted from: Wang, Z., et al. (2009), Nature Reviews Genetics, 10, 57–63.</p>
+</div>
+
+## RNAseq Workflow
+
+
+<div style="width: 40%; 
+            float: left"> 
+
+<div class="wkfthree2">
+<span style="color: #8b0000;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+
+<div style="margin-left: 60px;
+            float: none;">  
+            
+<img src="images/RNAseq_WorkFlow.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+<div style="text-align: right">
+<p style="font-size: 14px">Image adapted from: Wang, Z., et al. (2009), Nature Reviews Genetics, 10, 57–63.</p>
+</div>
+
+## Library preparation
+
+<div style="position: relative; 
+            z-index: 0;
+            height: 480px;
+            width: 960px;">
+<div style="z-index: 1;
+            position: absolute;
+            top: 0px;
+            left: 0px">
+<img src="images/RNA_Extraction.svg" class="centerimg" style="width: 80%">
+</div>
+
+<div style="z-index: 2;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;">
+<div>
+<img src="images/rRNA.svg" style="width: 8%"> - Ribosomal RNA
+</div>
+<div>
+<img src="images/mRNA.svg" style="width: 8%"> - Poly-A transcripts
+</div>
+<div>
+<img src="images/OtherRNA.svg" style="width: 8%"> - Other RNAs e.g. tRNA, miRNA etc.
+</div>
+</div>
+
+<div style="z-index:3;
+            position: absolute;
+            left: 10px;
+            bottom: 185px">
+<p style="font-size:26px">Total RNA extraction</p>
+</div>
+
+## Library preparation
+
+<div style="width: 45%;
+            float: left;">
+<div style="text-align: center;">
+<span style="color: #2e2892;">**Poly-A Selection**</span>
+</div>
+<div style="padding-top: 20px;
+            padding-bottom: 20px;">
+<img src="images/polyA_selection.svg" class="centerimg" style="width: 95%">
+</div>  
+<div>
+Poly-A transcripts e.g.:
+  
+* mRNAs
+* immature miRNAs
+* snoRNA
+</div>
+</div>
+
+<div style="width: 45%;
+            float: right;">
+<div style="text-align: center;">
+<span style="color: #2e2892;">**Ribominus selection**</span>
+</div>
+<div style="padding-top: 20px;
+            padding-bottom: 20px;">
+<img src="images/ribominus_selection.svg" class="centerimg" style="width: 95%">
+</div>  
+<div>
+Poly-A transcripts + Other mRNAs e.g.:
+
+* tRNAs
+* mature miRNAs
+* piRNAs
+</div>
+</div>
+
+
+## Library preparation
+
+1. RNA &rarr; Reverse Transcription &rarr; ctDNA ...   
+2. Fragmentation - short fragments ~200-300 nt ...   
+3. Adapter and Index binding ...    
+4. PCR Amplification.   
+
+<div style="margin-top: 40px;">
+<img src="images/ReadStructure.png" class="centerimg" style="width: 95%">
+</div>
+
+## RNAseq Workflow
+
+
+<div style="width: 40%; 
+            float: left"> 
+
+
+<div class="wkfthree2">
+<span style="color: #2e2892;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #8b0000;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">  
+            
+<img src="images/RNAseq_WorkFlow.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+<div style="text-align: right">
+<p style="font-size: 14px">Image adapted from: Wang, Z., et al. (2009), Nature Reviews Genetics, 10, 57–63.</p>
+</div>
+
+## RNAseq Workflow
+
+<div style="width: 40%; 
+            float: left"> 
+            
+<div class="wkfthree2">
+<span style="color: #2e2892;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #8b0000;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">            
+<img src="images/RNAseq_WorkFlow_ShortReads.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+## RNAseq Workflow
+
+<div style="width: 40%; 
+            float: left"> 
+            
+<div class="wkfthree2">
+<span style="color: #2e2892;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #8b0000;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">  
+            
+
+<img src="images/RNAseq_WorkFlow.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+## Differential Gene Expression Analysis Workflow {#less_space_after_title}
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/workflow_3Day.svg" class="centerimg" style="width: 80%; margin-top: 60px;">
+
+
+## Differential Gene Expression Analysis Workflow {#less_space_after_title}
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/workflow_Makerere.svg" class="centerimg" style="width: 80%; margin-top: 60px;">
+
+
+## Differential Gene Expression Analysis Workflow {#less_space_after_title}
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/workflow_FQQC.svg" class="centerimg" style="width: 80%; margin-top: 60px;">
+
+## Fastq file format
+
+<img src="images/fq_Mak.png" style="width: 95%">
+
+## QC is important
+
+Check for any problems before we put time and effort into analysing potentially bad data
+
+<div style="width: 40%; 
+            float: left"> 
+          
+          
+* Start with FastQC
+  * Quick
+  * Outputs an easy to read html report
+  
+https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+  
+</div>
+  
+<div style="margin-left: 60px;
+            float: none;">
+  
+<img src="images/FastQC_logo.png" style="width: 25%;
+                                  margin-left: auto;
+                                  margin-right: auto;
+                                  display: block;">
+                                               
+</div>
+
+
+
+## Per base sequence quality
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good1.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad1.png" style="width: 100%">
+</div>
+
+## Per base sequence content
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good2.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad2.png" style="width: 100%">
+</div>
+
+## Per sequence GC content
+
+<!--
+Ash: the bad GC content plot is some data I worked on. The bimodal distribution 
+is because this was C. elegans - mean GC ~36%: first distribution - but the culture 
+was badly contaminated with a variety of bacteria, hence the second distribution. 
+The spike is due to severe adapter contamination.
+-->
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good3.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad3.png" style="width: 100%">
+</div> 
+
+
+## Differential Gene Expression Analysis Workflow {#less_space_after_title}
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/workflow_QuantQC.svg" class="centerimg" style="width: 80%; margin-top: 60px;">
+              
+## Alignment
+
+AIM: Given a reference sequence and a set of short reads, align each read to
+the reference sequence finding the most likely origin of the read sequence.
+
+<img src="images/SRAlignment.svg" class="centerimg" style="width: 100%; margin-top: 60px;">
+
+## Alignment - Splicing aware alignment
+
+<img src="images/GappedAlignment.svg" class="centerimg" style="width: 100%; margin-top: 60px;">
+
+Aligners: STAR, HISAT2
+
+
+## Quantification
+
+* Broadly classified into two types:
+  * **Alignment based**
+  * **Quasi-mapping or pseudoalignment based**
+  
+## Quantification
+
+* Broadly classified into two types:
+  * **Alignment based**:
+    * Reads must be mapped to **Genome** prior to quantification
+    * quantifies using simple counting procedure
+    * Pros: Intuitive
+    * Cons: Slow and can not correct biases in RNAseq data
+    * Tools: HTseq, SubRead etc. 
+  
+  * **Quasi-mapping or pseudoalignment based** ...
+
+## Alignment based quantification
+
+* Traditional alignment is (relatively) slow and computationally intensive
+
+    
+<img src="images/quasi_mapping_1.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+## Alignment based quantification
+
+* Traditional alignment is (relatively) slow and computationally intensive
+
+    
+<img src="images/quasi_mapping_1a.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+## Alignment based quantification
+
+* Traditional alignment is (relatively) slow and computationally intensive
+
+    
+<img src="images/quasi_mapping_1b.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+## Alignment based quantification
+
+* Traditional alignment is (relatively) slow and computationally intensive
+    
+<img src="images/quasi_mapping_2.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+
+## Alignment based quantification
+
+* Traditional alignment is (relatively) slow and computationally intensive
+    
+<img src="images/quasi_mapping_2a.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+## Alignment based quantification
+
+**Counting**: How many reads have come from a genomic feature?    
+  * genomic feature can be gene or transcript or exon, but usually gene
+
+Once the reads are mapped we know where on the genome the RNA fragment originated.
+
+We also know the locations of exons of genes on the genome.
+
+So the simplest approach is to count how many reads overlap each gene.
+
+<img src="images/Read_counting_2.svg" class="centerimg" style="width: 90%; margin-top: 20px;">
+
+## Quantification
+
+* Broadly classified into two types ...
+  * **Alignment based**:
+    * Reads must be mapped to **Genome** prior to quantification
+    * quantifies using simple counting procedure
+    * Pros: Intuitive
+    * Cons: Slow and can not correct biases in RNAseq data
+    * Tools: HTseq, SubRead etc. 
+  
+  * **Quasi-mapping (or pseudoalignment) based**:
+    * Starts from raw reads and base-to-base alignment of the reads is avoided
+    * Reads aligned to **Transcriptome**
+    * Pros: Very fast and removes biases
+    * Cons: Not intuitive
+    * Tools: Kallisto, Sailfish, **Salmon** etc 
+    
+## Quantification with Quasi-mapping (Salmon)
+
+* Pseudoalignment/Quasi-aligments methods are much faster than traditional mapping
+* Unlike alignment based methods, pseudo-alignment methods focus on transcriptome (~2% of genome in human)
+* Use exact kmer matching rather than aligning whole reads with mismatches and indels
+    
+<img src="images/quasi_mapping_3.svg" class="centerimg" style="width: 90%; margin-top: 40px;">
+
+## Quantification with Quasi-mapping (Salmon)
+
+Salmon does not simply count reads, but uses a dual-phase parallel modelling
+and inference algorithm along with bias models to estimate expression at the
+transcript level.
+
+Salmon also takes account of biases:
+
+* **Multimapping**: Reads which map equally well to multiple locations
+* **GC bias**: Higher GC content sequences are less likely to be observed as PCR  is not efficient with high GC content sequences.
+* **Positional bias**: for most sequencing methods, the 3 prime end of transcripts are more likely to be observed.
+* **Complexity bias**: some sequences are easier to be bound and amplified than others.
+* **Sequence-based bias**: Bias in read start positions arising from the differential binding efficiency of random hexamer primers
+* **Fragment length bias**: Induced by size selection
+
+* Methods like Salmon attempt to mitigate the effect of technical biases by estimating sample-specific bias parameters.
+
+## Quantification with Quasi-mapping (Salmon)
+
+<img src="images/Salmon_workflow_2.png" class="centerimg" style="width: 55%;">
+
+<div style="text-align: right">
+  Patro *et al.* (2017) Nature Methods doi:10.1038/nmeth.4197
+</div>
+
+## QC of aligned reads
+
+* Alignment Rate
+* Duplication Rate
+* Insert Size
+* Transcript coverage
+
+Picard Tools:
+
+  https://broadinstitute.github.io/picard/
+
+## QC of aligned reads - Alignment Rate
+
+* Depends on:
+    * Quality of Reference Genome
+    * Quality of library prep and sequencing
+    * For human and mouse > 95%
+
+## QC of aligned reads - Duplication Rate
+
+* Duplicate reads (identical sequences or alignments) could be:
+    * "Real" - coming from different original RNAs
+    * PCA duplicates
+    * Optical duplicates (**not** with latest technologies)
+* Human exome is ~30 Mb therefore, if we have 50 bp Single End reads, there are ~60 million possible reads
+* Duplication rates in RNAseq can be > 60% depending on depth of sequencing
+* Using Paired End reads (typical these days) greatly reduces duplication rates
+
+## QC of aligned reads - Insert Size
+
+* Insert size is the length of the fragment of mRNA from which the reads are
+derived
+
+<img src="images/Insert_Size_QC.svg" class="centerimg">
+<img src="images/Insert_Size.svg" class="centerimg" style="width: 80%">
+
+## QC of aligned reads - Transcript coverage
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/TranscriptCoverage2.png" class="centerimg" style="width: 80%">
+
+
+## Case Study 
+
+<img src="images/case_study.png" class="centerimg" style="width: 60%">
+
