@@ -1,0 +1,216 @@
+---
+title: "Basic quality control with FastQC"
+date: "March 2023"
+output:
+  ioslides_presentation:
+    css: css/stylesheet.css
+    logo: images/CRUK_Cambridge_Institute.png
+    smaller: yes
+    widescreen: yes
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+## Differential Gene Expression Analysis Workflow {#less_space_after_title}
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/workflow_3Day.svg" class="centerimg" style="width: 80%; margin-top: 60px;">
+
+## Fastq file format
+<img src="images/fq.png" style="width: 95%">
+
+## Fastq file format - Headers
+<img src="images/fq_headers.png" style="width: 95%">
+
+## Fastq file format - Sequences
+<img src="images/fq_seq.png" style="width: 95%">
+
+## Fastq file format - Third line 
+<img src="images/fq_3rd_line.png"style="width: 95%"> 
+
+## Fastq file format - Quality Scores
+<img src="images/fq_quality.png" style="width: 95%">
+
+## (Phred) Quality Scores
+
+Sequence quality scores are transformed and translated p-values 
+
+<div style="width: 100%; 
+            float: left"> 
+            
+* Sequence bases are called after image processing (base calling) 
+  * Each base in a sequence has a _p-value_ associated with it 
+  * p-values range from 0-1 (e.g.: 0.05, 0.01, 1e-30) 
+  * p-value of 0.01 inferred as 1 in 100 chance that called base is wrong 
+</div>
+
+## (Phred) Quality Scores  ... 
+
+
+How do we assign p-values to bases in the fastq file?
+
+<div style="width: 50%; 
+            float: left"> 
+            
+* P-vales can be many characters long (e.g.:0.000005)
+* Transform to Phred quality scores _Q_
+* $Q = -10(log_{10} P)$ (e.g.: 0.01 = Q value of 20,  0.001 = Q value of 30)
+* Translate _Q_ values to ASCII characters (adding 33) (Q value of 30 = ?, Q value of 40 = I )
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">
+  
+<img src="images/ascii.png" style="width: 30%;
+                                  margin-left: auto;
+                                  margin-right: auto;
+                                  margin-bottom: auto;
+                                  display: block;">
+                                               
+</div>
+
+
+  
+
+## QC is important
+
+Check for any problems before we put time and effort into analysing potentially bad data
+
+<div style="width: 40%; 
+            float: left"> 
+          
+          
+* Start with FastQC
+  * Quick
+  * Outputs an easy to read html report
+  
+</div>
+  
+<div style="margin-left: 60px;
+            float: none;">
+  
+<img src="images/FastQC_logo.png" style="width: 25%;
+                                  margin-left: auto;
+                                  margin-right: auto;
+                                  display: block;">
+                                               
+</div>
+
+We run fastQC from the terminal with the command 
+  
+  **fastqc `<fastq>`**
+  
+but there are lots of other parameters which you can find to tailor your QC by typing 
+  
+  **fastqc -h**
+
+## Per base sequence quality
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good1.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad1.png" style="width: 100%">
+</div>
+
+## Per base sequence content
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good2.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad2.png" style="width: 100%">
+</div>
+
+## Per sequence GC content
+
+<!--
+Ash: the bad GC content plot is some data I worked on. The bimodal distribution 
+is because this was C. elegans - mean GC ~36%: first distribution - but the culture 
+was badly contaminated with a variety of bacteria, hence the second distribution. 
+The spike is due to severe adapter contamination.
+-->
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good3.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad3.png" style="width: 100%">
+</div> 
+
+## Adaptor content
+
+<div style="width: 47%; 
+            float: left">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Good Data**</span>
+</div>
+<img src="images/good4.png" style="width: 100%">
+</div>
+
+<div style="width: 47%;
+            float: right;">
+<div style="text-align: center;">
+   <span style="color: #2e2892;">**Bad Data**</span>
+</div>
+<img src="images/bad4.png" style="width: 100%">
+</div> 
+
+
+## And now onto the exercise...
+
+* Go to: https://ushers.bio.cam.ac.uk/guacamole2
+
+* Log on with YOUR credentials that were emailed to you
+
+## A quick intro to the environment
+ 
+- The terminal is just a text based version of the operating system 
+- We will look at an example with side by side GUI and text file system...
+- You use commands instead of mouse clicks - commands are case-senstitve and can be followed by arguments with spaces 
+  - cd
+  - pwd
+  - ls 
+  - flags - e.g. ls -a 
+  - the directory structure is like a tree, you can go back with cd ..
+  - Up arrows to get through history 
+  - tab complete to avoid errors
+  - More to look at the files and q to exit
+  - ctrl-c
+
+
+
+
+
+
+
+
+

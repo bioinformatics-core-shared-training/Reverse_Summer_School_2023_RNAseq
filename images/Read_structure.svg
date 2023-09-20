@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="270.22778mm"
+   height="45.861111mm"
+   viewBox="0 0 270.22778 45.861111"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   sodipodi:docname="Read_structure.svg"
+   inkscape:export-filename="/Users/sawle01/Documents/training/Reverse_Summer_School_2023_RNAseq/images/ReadStructure.png"
+   inkscape:export-xdpi="328.961"
+   inkscape:export-ydpi="328.961"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.5"
+     inkscape:cx="500"
+     inkscape:cy="71"
+     inkscape:window-width="1440"
+     inkscape:window-height="847"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-12.718192,-190.80258)">
+    <image
+       width="270.22778"
+       height="45.861111"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="../../../../../Desktop/Screenshot%202023-09-20%20at%2009.39.38.png"
+       id="image988"
+       x="12.718192"
+       y="190.80258" />
+    <path
+       id="rect1048"
+       style="fill:#0000ff;stroke:none;stroke-width:0.665001;stroke-linecap:round;stop-color:#000000;fill-opacity:1"
+       d="m 105.17055,209.33865 31.14883,-0.0238 0.0778,-2.60193 7.93166,4.97394 h -39.15835 z"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       id="path2303"
+       style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.665001;stroke-linecap:round;stop-color:#000000"
+       d="m 188.48143,227.75784 -31.14883,0.0238 -0.0778,2.60193 -7.93166,-4.97394 h 39.15835 z"
+       sodipodi:nodetypes="cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:6.36694px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583;-inkscape-font-specification:'sans-serif Bold';font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
+       x="110.50954"
+       y="207.67215"
+       id="text2725"><tspan
+         sodipodi:role="line"
+         id="tspan2723"
+         style="stroke-width:0.264583;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
+         x="110.50954"
+         y="207.67215">Read 1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.36694px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+       x="159.92227"
+       y="233.88094"
+       id="text3911"><tspan
+         sodipodi:role="line"
+         id="tspan3909"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="159.92227"
+         y="233.88094">Read 2</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,158 @@
+---
+title: "Introduction to Bulk RNAseq data analysis"
+subtitle: "Gene Set Testing for RNA-seq - Solutions"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes  
+layout: page
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+library(org.Mm.eg.db)
+library(msigdbr)
+library(clusterProfiler)
+library(pathview)
+library(tidyverse)
+```
+
+## Exercise 1 - pathview
+
+Load the required packages and data for Day 11 if you have not already done so. 
+
+```{r prepareORAData,}
+library(msigdbr)
+library(clusterProfiler)
+library(pathview)
+library(tidyverse)
+
+shrink.d11 <- readRDS("RObjects/Shrunk_Results.d11.rds")
+```
+
+> 1. Use `pathview` to export a figure for "mmu04659"or "mmu04658", but this 
+> time only use genes that are statistically significant at FDR < 0.01
+
+```{r solution1}
+logFC <- shrink.d11 %>% 
+  drop_na(FDR, Entrez) %>% 
+  filter(FDR < 0.01) %>% 
+  pull(logFC, Entrez) 
+
+pathview(gene.data = logFC, 
+         pathway.id = "mmu04659", 
+         species = "mmu", 
+         limit = list(gene=5, cpd=1))
+```
+
+mmu04659.pathview.png:
+
+![mmu04659 - Th17 cell differentiation](images/mmu04659_pathview.png)
+
+## Exercise 2 - GSEA
+
+> Another common way to rank the genes is to order by pvalue, but also, sorting
+> so that upregulated genes are at the start and downregulated at the end - 
+> you can do this combining the sign of the fold change and the pvalue. 
+
+First load the pathway details if you have not already done so.
+
+```{r solution3_GSEA_a}
+library(msigdbr)
+term2gene <- msigdbr(species = "Mus musculus", category = "H") %>% 
+  dplyr::select(gs_name, ensembl_gene)
+term2name <- msigdbr(species = "Mus musculus", category = "H") %>% 
+  dplyr::select(gs_name, gs_description) %>% 
+  distinct()
+```
+
+> 1. Rank the genes by statistical significance - you will need to create
+> a new ranking value using `-log10({p value}) * sign({Fold Change})`.
+
+```{r solution3_GSEA_1}
+# rank genes
+rankedGenes.e11 <- shrink.d11 %>%
+  drop_na(GeneID, pvalue, logFC) %>%
+  mutate(rank = -log10(pvalue) * sign(logFC)) %>%
+  arrange(desc(rank)) %>%
+  pull(rank, GeneID)
+```
+
+
+> 2. Run GSEA using the new ranked genes and the Hallmark pathways.
+
+```{r solution3_GSEA_2}
+# conduct analysis:
+gseaRes.e11 <- GSEA(rankedGenes.e11,
+                TERM2GENE = term2gene,
+                TERM2NAME = term2name,
+                pvalueCutoff = 1.00, 
+                minGSSize = 15,
+                maxGSSize = 500)
+```
+
+View the results:
+
+```{r top10GseaPrint, eval=FALSE}
+as_tibble(gseaRes.e11) %>% 
+  arrange(desc(abs(NES))) %>% 
+  top_n(10, wt=-p.adjust) %>% 
+  dplyr::select(-core_enrichment) %>%
+  mutate(across(c("enrichmentScore", "NES"), round, digits=3)) %>% 
+  mutate(across(c("pvalue", "p.adjust", "qvalue"), scales::scientific)) 
+```
+
+```{r top10GseaPrintactual, echo=FALSE}
+as_tibble(gseaRes.e11) %>% 
+  arrange(desc(abs(NES))) %>% 
+  top_n(10, wt=-p.adjust) %>% 
+  dplyr::select(-core_enrichment) %>%
+  mutate(across(c("enrichmentScore", "NES"), round, digits=3)) %>% 
+  mutate(across(c("pvalue", "p.adjust", "qvalue"), scales::scientific)) %>% 
+  DT::datatable(option=list(dom='t'))
+```
+
+> 3. Conduct the same analysis for the day 33 Infected vs Uninfected contrast.
+
+```{r solution3_GSEA_3}
+
+# read d33 data in:
+shrink.d33 <- readRDS("RObjects/Shrunk_Results.d33.rds")
+
+# rank genes
+rankedGenes.e33 <- shrink.d33 %>%
+  drop_na(GeneID, pvalue, logFC) %>%
+  mutate(rank = -log10(pvalue) * sign(logFC)) %>%
+  arrange(desc(rank)) %>%
+  pull(rank,GeneID)
+
+# perform analysis
+gseaRes.e33 <- GSEA(rankedGenes.e33,
+                TERM2GENE = term2gene,
+                TERM2NAME = term2name,
+                pvalueCutoff = 1.00, 
+                minGSSize = 15,
+                maxGSSize = 500)
+```
+
+View the results:
+
+```{r top10GseaPrint33, eval=FALSE}
+as_tibble(gseaRes.e33) %>% 
+  arrange(desc(abs(NES))) %>% 
+  top_n(10, wt=-p.adjust) %>% 
+  dplyr::select(-core_enrichment) %>%
+  mutate(across(c("enrichmentScore", "NES"), round, digits=3)) %>% 
+  mutate(across(c("pvalue", "p.adjust", "qvalue"), scales::scientific))
+```
+
+```{r top10GseaPrintactual33, echo=FALSE}
+as_tibble(gseaRes.e33) %>% 
+  arrange(desc(abs(NES))) %>% 
+  top_n(10, wt=-p.adjust) %>% 
+  dplyr::select(-core_enrichment) %>%
+  mutate(across(c("enrichmentScore", "NES"), round, digits=3)) %>% 
+  mutate(across(c("pvalue", "p.adjust", "qvalue"), scales::scientific)) %>% 
+  DT::datatable(option=list(dom='t'))
+```
