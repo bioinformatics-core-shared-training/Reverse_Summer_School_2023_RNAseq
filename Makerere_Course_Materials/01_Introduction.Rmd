@@ -558,6 +558,29 @@ Salmon also takes account of biases:
   Patro *et al.* (2017) Nature Methods doi:10.1038/nmeth.4197
 </div>
 
+## Quantification with Quasi-mapping (Salmon)
+
+* Salmon outputs one folder for each sample. 
+* The main quantification output is called "*quant.sf*"
+
+<img src="images/SalmonFolder.png" class="centerimg" style="width: 93%;">
+
+
+## Quantification with Quasi-mapping (Salmon)
+
+* The output "*quant.sf*" contains:  
+
+    * Name — The name of the target transcript. 
+    * Length — Length of the target transcript in nucleotides. 
+    * EffectiveLength — Effective length of the target transcript. 
+    * TPM — Estimate of the relative abundance of this transcript in Transcripts Per Million (TPM). 
+    * NumReads — Estimate of the number of reads mapping to each transcript.  
+
+
+<img src="images/SalmonQuantTab2.png" class="centerimg" style="width: 93%;">
+
+                      https://salmon.readthedocs.io/en/latest/file_formats.html
+
 ## QC of aligned reads
 
 * Alignment Rate
