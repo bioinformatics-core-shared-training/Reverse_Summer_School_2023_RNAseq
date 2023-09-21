@@ -446,6 +446,14 @@ to cope with other distributions e.g Negative Binomial
 
 <img src="images/LM_2Fac2Lev.png" class="centerimg" style="width: 94%">
 
+## Different types of model with two factors
+
+<img src="images/SimpleModels.png" class="centerimg" style="width: 95%">
+
+## Different types of model with two factors
+
+<img src="images/AdditiveAndInteractionModelsSm.png" class="centerimg" style="width: 95%">
+
 ## Multiple testing correction 
 
 * A gene with a significance cut-off of pval = 0.05, means there is a 5% chance it is a false positive.
@@ -472,4 +480,7 @@ to cope with other distributions e.g Negative Binomial
 * Use a Generalized Linear Model to estimate coefficients
 * Test statistic is Fold Change / Standard Error of Fold Change
 * P value derived from test statistic
+* When more than one factor - Additive or Interactive models
 * Multiple testing correction
+
+
