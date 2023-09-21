@@ -422,10 +422,7 @@ number of differentially expressed genes</a></li>
 <li><a href="#should-we-be-using-the-interaction-model" id="toc-should-we-be-using-the-interaction-model">Should we be using the
 interaction model?</a>
 <ul>
-<li><a href="#using-an-interaction-model" id="toc-using-an-interaction-model">Using an interaction model</a>
-<ul>
-<li><a href="#exercise-4" id="toc-exercise-4">Exercise 4</a></li>
-</ul></li>
+<li><a href="#using-an-interaction-model" id="toc-using-an-interaction-model">Using an interaction model</a></li>
 <li><a href="#extracting-specific-contrasts-from-an-interactive-model" id="toc-extracting-specific-contrasts-from-an-interactive-model">Extracting
 specific contrasts from an interactive model</a></li>
 </ul></li>
@@ -673,12 +670,20 @@ results.simple</code></pre>
 <p>Now we have made our results table using our simple model, let have a
 look at which genes are changing and how many pass our 0.05
 threshold.</p>
+<pre class="r"><code>sum(results.simple$padj &lt; 0.05)</code></pre>
+<pre><code>## [1] NA</code></pre>
 <p>Some of the <code>padj</code> values are <code>NA</code>. This is due
 to “Independent Filtering”</p>
+<pre class="r"><code>sum(is.na(results.simple$padj))</code></pre>
+<pre><code>## [1] 1584</code></pre>
 <p>To count the number of genes that are signficant we need to exclude
 the <code>NA</code>s:</p>
+<pre class="r"><code>sum(results.simple$padj &lt; 0.05, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 2884</code></pre>
 <p>We could also check for the number of upregulated genes by also
 testing the fold change:</p>
+<pre class="r"><code>sum(results.simple$padj &lt; 0.05 &amp; results.simple$log2FoldChange &gt; 0, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 1879</code></pre>
 </div>
 <div id="independent-filtering" class="section level3">
 <h3>Independent filtering</h3>
@@ -705,6 +710,24 @@ Point”.</p>
 <p>Let’s start with the model with only main effects - an additive model
 with no interaction. The main assumption here is that the effects of
 Status and the effects of Time Point are indepedent.</p>
+<pre class="r"><code>additive.model &lt;- as.formula(~ TimePoint + Status)
+ddsObj.raw &lt;- DESeqDataSetFromTximport(txi = txi,
+                                      colData = sampleinfo,
+                                      design = additive.model)</code></pre>
+<pre><code>## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+## design formula are characters, converting to factors</code></pre>
+<pre><code>## using counts and average transcript lengths from tximport</code></pre>
+<pre class="r"><code>keep &lt;- rowSums(counts(ddsObj.raw)) &gt; 5
+ddsObj.filt &lt;- ddsObj.raw[keep,]
+ddsObj &lt;- DESeq(ddsObj.filt)</code></pre>
+<pre><code>## estimating size factors</code></pre>
+<pre><code>## using &#39;avgTxLength&#39; from assays(dds), correcting for library size</code></pre>
+<pre><code>## estimating dispersions</code></pre>
+<pre><code>## gene-wise dispersion estimates</code></pre>
+<pre><code>## mean-dispersion relationship</code></pre>
+<pre><code>## final dispersion estimates</code></pre>
+<pre><code>## fitting model and testing</code></pre>
+<pre class="r"><code>results.additive &lt;- results(ddsObj, alpha=0.05)</code></pre>
 <div id="the-default-contrast-of-results" class="section level3">
 <h3>The default contrast of <code>results</code></h3>
 <p>The <code>results</code> function has returned the results for the
@@ -785,8 +808,6 @@ model to use. This is not always the case and so there are methods for
 comparing models if you are not sure.</p>
 <div id="using-an-interaction-model" class="section level2">
 <h2>Using an interaction model</h2>
-<div id="exercise-4" class="section level3">
-<h3>Exercise 4</h3>
 <p>The model formula should be:</p>
 <p><code>~TimePoint + Status + TimePoint:Status</code> where
 <code>TimePoint:Status</code> is the parameter for the interaction
@@ -794,7 +815,7 @@ beteween TimePoint and Status.</p>
 <p>Note that <code>*</code> can be used as shortcut to add the
 interaction term, e.g. <code>~TimePoint * Status</code>, however,
 writing out in long form is clearer here.</p>
-<pre class="r"><code>interaction.model &lt;- as.formula(~ TimePoint * Status)
+<pre class="r"><code>interaction.model &lt;- as.formula(~ TimePoint + Status + TimePoint:Status)
 ddsObj.raw &lt;- DESeqDataSetFromTximport(txi = txi,
                                       colData = sampleinfo,
                                       design = interaction.model)</code></pre>
@@ -813,7 +834,6 @@ create a new analysis object called <code>ddsObj.interaction</code>.</p>
 <pre><code>## mean-dispersion relationship</code></pre>
 <pre><code>## final dispersion estimates</code></pre>
 <pre><code>## fitting model and testing</code></pre>
-</div>
 </div>
 <div id="extracting-specific-contrasts-from-an-interactive-model" class="section level2">
 <h2>Extracting specific contrasts from an interactive model</h2>

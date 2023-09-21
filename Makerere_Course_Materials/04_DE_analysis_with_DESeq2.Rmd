@@ -222,26 +222,26 @@ results.simple
 Now we have made our results table using our simple model, let have a look at which
 genes are changing and how many pass our 0.05 threshold. 
 
-```{r echo=FALSE, message=FALSE, include=FALSE}
+```{r}
 sum(results.simple$padj < 0.05)
 ```
 
 Some of the `padj` values are `NA`. This is due to "Independent Filtering"
 
-```{r echo=FALSE, message=FALSE, include=FALSE}
+```{r}
 sum(is.na(results.simple$padj))
 ```
 
 To count the number of genes that are signficant we need to exclude the `NA`s:
 
-```{r echo=FALSE, message=FALSE, include=FALSE}
+```{r}
 sum(results.simple$padj < 0.05, na.rm = TRUE)
 ```
 
 We could also check for the number of upregulated genes by also testing the
 fold change:
 
-```{r echo=FALSE, message=FALSE, include=FALSE}
+```{r}
 sum(results.simple$padj < 0.05 & results.simple$log2FoldChange > 0, na.rm = TRUE)
 ```
 
@@ -271,7 +271,7 @@ Let's start with the model with only main effects - an additive model with no
 interaction. The main assumption here is that the effects of Status and the
 effects of Time Point are indepedent.
 
-```{r message=FALSE, include=FALSE}
+```{r}
 additive.model <- as.formula(~ TimePoint + Status)
 ddsObj.raw <- DESeqDataSetFromTximport(txi = txi,
                                       colData = sampleinfo,
@@ -309,7 +309,7 @@ rm(results.additive)
 
 Let's get the top 100 genes by adjusted p-value
 
-```{r topGenesPvV, message = F, results="hide"}
+```{r topGenesPvV, message = FALSE, results="hide"}
 topGenesIvU <- as.data.frame(results.InfectedvUninfected) %>%
     rownames_to_column("GeneID") %>% 
     top_n(100, wt=-padj)
@@ -356,7 +356,6 @@ is not always the case and so there are methods for comparing models if you are
 not sure.
 
 ## Using an interaction model
-### Exercise 4
 
 The model formula should be:
 
@@ -368,7 +367,7 @@ Note that `*` can be used as shortcut to add the interaction term,
 e.g. `~TimePoint * Status`, however, writing out in long form is clearer here.
 
 ```{r}
-interaction.model <- as.formula(~ TimePoint * Status)
+interaction.model <- as.formula(~ TimePoint + Status + TimePoint:Status)
 ddsObj.raw <- DESeqDataSetFromTximport(txi = txi,
                                       colData = sampleinfo,
                                       design = interaction.model)
