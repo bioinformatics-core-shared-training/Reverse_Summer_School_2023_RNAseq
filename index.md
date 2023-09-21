@@ -16,7 +16,7 @@ as practicals. The full course can be found here:
 
 * [Introduction to RNAseq Data Preprocessing (lecture)](Makerere_Course_Materials/01_Introduction.html)
 * [Initial exploration of count data (lecture)](Makerere_Course_Materials/02_DataExploration.html)
-* [Introduction to differential expression analysis (lecture)]()
+* [Introduction to differential expression analysis (lecture)](Makerere_Course_Materials/03_Introduction_to_DGE_Analysis_in_R.html)
 * [Differential Expression Analysis with DESeq2 (practical)]()
 
 ## Additional Resources
