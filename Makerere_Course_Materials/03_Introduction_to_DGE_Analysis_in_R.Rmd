@@ -420,6 +420,13 @@ to cope with other distributions e.g Negative Binomial
 
 <img src="images/LM_Category3.png" class="centerimg" style="width: 94%">
 
+## GLM for Differential Expression Analysis
+
+<img src="images/LM_Category2.png" class="centerimg" style="width: 94%">
+
+## GLM for Differential Expression Analysis
+
+<img src="images/LM_Category3.png" class="centerimg" style="width: 94%">
 
 <img src="images/LM_test_stat.png" class="centerimg" style="width: 60%">
 
@@ -444,7 +451,7 @@ to cope with other distributions e.g Negative Binomial
 
 ## Two factors - two levels each - Interaction Model
 
-<img src="images/LM_2Fac2Lev.png" class="centerimg" style="width: 94%">
+<img src="images/LM_2Fac2Lev_Int.png" class="centerimg" style="width: 94%">
 
 ## Different types of model with two factors
 
