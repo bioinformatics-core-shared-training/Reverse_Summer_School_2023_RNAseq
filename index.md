@@ -14,10 +14,16 @@ as practicals. The full course can be found here:
 
 [Full RNAseq Analysis Course](Full_Course_Index.md)
 
+### Day 1 (Thursday 21st September)
+
 * [Introduction to RNAseq Data Preprocessing (lecture)](Makerere_Course_Materials/01_Introduction.html)
 * [Initial exploration of count data (lecture)](Makerere_Course_Materials/02_DataExploration.html)
 * [Introduction to differential expression analysis (lecture)](Makerere_Course_Materials/03_Introduction_to_DGE_Analysis_in_R.html)
 * [Differential Expression Analysis with DESeq2 (practical)](Makerere_Course_Materials/04_DE_analysis_with_DESeq2.html)
+
+### Day 2 (Friday 22nd September)
+
+* [Recap of Day 1](Makerere_Course_Materials/Day2_reacp.html)
 
 ## Additional Resources
 

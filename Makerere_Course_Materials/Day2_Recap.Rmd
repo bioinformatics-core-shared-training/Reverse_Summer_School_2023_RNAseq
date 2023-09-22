@@ -1,0 +1,307 @@
+---
+title: "Introduction to Differential Gene Expression Analysis with Bulk RNAseq"
+subtitle: "Recap of Day 1"
+date: "September 2023"
+output:
+  ioslides_presentation:
+    css: css/stylesheet.css
+    logo: images/CRUK_Cambridge_Institute.png
+    smaller: yes
+    widescreen: yes
+  beamer_presentation: default
+---
+
+## RNAseq Workflow
+
+
+<div style="width: 40%; 
+            float: left"> 
+
+<div class="wkfthree2">
+<span style="color: #2e2892;">**Library Preparation**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Sequencing**</span>
+</div>
+
+<div class="wkfthree2" style="margin-top: 100px;">
+<span style="color: #2e2892;">**Bioinformatics Analysis**</span>
+</div>
+</div>
+
+<div style="margin-left: 60px;
+            float: none;">  
+            
+<img src="images/RNAseq_WorkFlow.png" style="width: 48%; margin-left: auto; margin-right: auto; display: block;">
+</div>
+
+<div style="text-align: right">
+<p style="font-size: 14px">Image adapted from: Wang, Z., et al. (2009), Nature Reviews Genetics, 10, 57–63.</p>
+</div>
+
+## Library preparation
+
+1. RNA &rarr; Reverse Transcription &rarr; ctDNA ...   
+2. Fragmentation - short fragments ~200-300 nt ...   
+3. Adapter and Index binding ...    
+4. PCR Amplification.   
+
+<div style="margin-top: 40px;">
+<img src="images/ReadStructure.png" class="centerimg" style="width: 95%">
+</div>
+
+## Sequencing
+
+<img src="images/RNAseq_WorkFlow_ShortReadsr.png" class="centerimg" style="width: 70%;">
+
+# Bioinformatics Analysis Preprocessing
+
+## Fastq file format
+
+<img src="images/fq_Mak.png" style="width: 95%">
+
+## QC with FastQC
+
+<img src="images/FastqQC_recap.svg" class="centerimg" style="width: 85%;">
+  
+https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+  
+## Alignment based quantification
+    
+<img src="images/quasi_mapping_2ar.svg" class="centerimg" style="width: 90%">
+
+<img src="images/Read_counting_2.svg" class="centerimg" style="width: 90%; margin-top: 80px;">
+    
+## Quantification with Quasi-mapping (Salmon)
+
+<img src="images/quasi_mapping_3r.svg" class="centerimg" style="width: 90%;">
+
+<img src="images/GC_Bias.png" class="centerimg" style="width: 80%; margin-top: 20px;">
+
+## Quantification with Quasi-mapping (Salmon)
+
+<img src="images/Salmon_workflow_2.png" class="centerimg" style="width: 55%;">
+
+<div style="text-align: right">
+  Patro *et al.* (2017) Nature Methods doi:10.1038/nmeth.4197
+</div>
+
+## QC of aligned reads
+
+* Alignment Rate
+* Duplication Rate
+* Insert Size
+* Transcript coverage
+
+Picard Tools:
+
+  https://broadinstitute.github.io/picard/
+  
+## QC of aligned reads - Transcript coverage
+
+<div style="line-height: 50%;"><br></div>
+
+<img src="images/TranscriptCoverage2.png" class="centerimg" style="width: 80%">
+
+# Bioinformatics Analysis Data Exploration
+
+## Reading in the count data
+
+```{r loadSalmon, eval=FALSE}
+library(tximport)
+txi <- tximport(salmon_files, type = "salmon", tx2gene = tx2gene)
+str(txi)
+```
+
+```{r loadSalmonF, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+library(DESeq2)
+library(tidyverse)
+sampleinfo <- read_tsv("data/samplesheet_corrected.tsv", col_types = c("cccc"))
+txi <- readRDS("RObjects/txi.rds")
+rawCounts <- round(txi$counts, 0) 
+keep <- rowSums(rawCounts) > 5
+filtCounts <- rawCounts[keep,]
+```
+
+
+```{r txiStr, echo=FALSE}
+str(txi)
+```
+
+## Total counts per sample
+
+```{r, echo=FALSE, fig.align="center"}
+rawCounts %>%
+  as.data.frame() %>% 
+  summarise(across(everything(), sum)) %>% 
+  pivot_longer(names_to="SampleName", values_to="Counts", everything()) %>% 
+  left_join(sampleinfo, by="SampleName") %>% 
+  mutate(SampleGroup = str_c(Status, ".", TimePoint)) %>% 
+  ggplot(aes(x=SampleName, y=Counts)) +
+    geom_col(aes(fill = SampleGroup), colour="black") +
+    geom_hline(yintercept = 20e6, colour="#33a02c", linetype=2) +
+    geom_hline(yintercept = 10e6, colour="#e31a1c", linetype=2) +
+    facet_wrap(vars(SampleGroup), nrow=1, scales = "free_x") +
+    scale_colour_manual(values=c("#fdbf6f", "#ff7f00", "#a6cee3", "#1f78b4")) +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+    labs(x="") +
+    guides(fill="none") +
+    theme(plot.background = element_rect(fill='transparent', color=NA),
+          panel.background = element_rect(fill='transparent', color=NA))
+
+```
+
+## Distribution of counts per gene
+
+* VST : variance stabilizing transformation
+* rlog : regularized log transformation
+
+```{r vst_countsa, message=FALSE}
+rlogCounts <- rlog(filtCounts)
+```
+
+```{r, echo=FALSE, fig.align="center", fig.height=4}
+rlogCounts %>%
+  as.data.frame() %>% 
+  rownames_to_column("GeneID") %>% 
+  pivot_longer(names_to="SampleName", values_to="Counts", -GeneID) %>% 
+  left_join(sampleinfo, by="SampleName") %>% 
+  mutate(SampleGroup = str_c(Status, ".", TimePoint)) %>% 
+  ggplot(aes(x=Counts)) +
+    geom_density(aes(colour = SampleGroup)) +
+    scale_colour_manual(values=c("#fdbf6f", "#ff7f00", "#a6cee3", "#1f78b4")) +
+    labs(x = "rlog(Counts)")
+
+```
+
+## Principal Component Analysis
+
+```{r pcaDat, echo=FALSE, include=FALSE}
+library(ggfortify)
+rlogCounts <- rlog(filtCounts)
+rvs <- rowVars(rlogCounts)
+hvgs <- order(rvs, decreasing = TRUE)[1:500]
+
+pcDat <- prcomp(t(rlogCounts[hvgs,]))
+```
+
+
+```{r correctSampleSheetPCA, echo=FALSE, fig.width=6, fig.height=5, fig.align="center"}
+autoplot(pcDat,
+         data = sampleinfo, 
+         fill="Status", 
+         shape="TimePoint",
+         size=5)  +
+  scale_shape_manual(values=c(21, 24)) +
+  guides(fill = guide_legend(override.aes=list(shape=21)))
+```
+
+# Bioinformatics Analysis Differential Gene Expression Analysis
+
+## DESeq2 analysis workflow
+
+<img src="images/DESeq2_workflow_00r.png" class="centerimg" style="width: 30%;">
+
+## Normalization
+
+<img src="images/scaling.svg" class="centerimg" style="margin-top: 40px; width: 80%">
+
+## Normalization
+
+<img src="images/GeometricScaling.svg" class="centerimg" style="margin-top: 25px; width: 80%">
+
+
+## Differential Expression - Modelling population distributions
+
+<img src="images/NB_recap.png" class="centerimg" style="width: 100%; margin-top: 50px;">
+
+## Differential Expression - Modelling population distributions
+
+<img src="images/NB_recap2.png" class="centerimg" style="width: 100%; margin-top: 50px;">
+
+## Differential Expression - estimating dispersion
+
+<img src="images/DESeq2_workflow_00r.png"  style="width: 25%; float: left; 
+    margin-top: 10px; margin-left:10%;">
+
+<img src="images/dispersion.png" style="width: 50%; margin-top: 30px">
+
+## GLM for Differential Expression Analysis
+
+<img src="images/LM_Category2.png" class="centerimg" style="width: 94%">
+
+
+## One factor - three levels
+
+<img src="images/LM_2Fac3Lev.png" class="centerimg" style="width: 94%">
+
+## Two factors - two levels each - Additive Model
+
+<img src="images/LM_2Fac2Lev.png" class="centerimg" style="width: 94%">
+
+## Two factors - two levels each - Interaction Model
+
+<img src="images/LM_2Fac2Lev_Int.png" class="centerimg" style="width: 94%">
+
+## Multiple testing correction 
+
+* When do lots of tests we increase the chances of false positive results.
+* We apply an adjustment to the pvalue - Benjamini-Hochberg (FDR).
+
+## Case Study 
+
+<img src="images/case_study.png" class="centerimg" style="width: 60%">
+
+## Applying using DESeq2 {#less_space_after_title}
+
+### **Load Data**
+```{r eval=FALSE}
+txiObj <- readRDS("RObjects/txi.rds")
+sampleinfo <- read_tsv("data/samplesheet_corrected.tsv", col_types="cccc") %>%
+  mutate(Status = fct_relevel(Status, "Uninfected"))
+```
+
+### **Define model**
+```{r eval=FALSE}
+model <- as.formula(~ TimePoint + Status + TimePoint:Status)
+```
+
+### **Create DESeqDataSet object**
+```{r eval=FALSE}
+ddsObj <- DESeqDataSetFromTximport(txi = txiObj,
+                                   colData = sampleinfo,
+                                   design = model)
+```
+
+## Applying using DESeq2 {#less_space_after_title}
+
+### **Filter out uninformative genes**
+```{r eval=FALSE}
+keep <- rowSums(counts(ddsObj) > 5
+ddsObj <- ddsObj[keep,]
+```
+
+
+### **Run DESeq workflow**: estimate size factors, estimate dispersion, run GLM
+```{r eval=FALSE}
+ddsObj <- DESeq(ddsObj)
+```
+
+
+### **Extract results**
+```{r eval=FALSE}
+results.day11 <- results(ddsObj,
+                         name="Status_Infected_vs_Uninfected",
+                         alpha=0.05)
+
+results.day33 <- results(ddsObj,
+                         contrast = list(c("Status_Infected_vs_Uninfected", "TimePointd33.StatusInfected")),
+                         alpha=0.05)
+```
+
+## DESeq2 Results Table
+
+<img src="images/DESeq2_results.png" class="centerimg" style="width: 90%">
+
