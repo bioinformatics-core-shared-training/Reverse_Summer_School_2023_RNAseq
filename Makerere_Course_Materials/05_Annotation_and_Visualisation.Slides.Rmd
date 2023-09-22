@@ -1,0 +1,174 @@
+---
+title: "Introduction to RNAseq analysis in R"
+subtitle: "Annotation and Visualisation"
+date: "September 2023"
+output:
+  ioslides_presentation:
+    css: css/stylesheet.css
+    logo: images/CRUK_Cambridge_Institute.png
+    smaller: yes
+    widescreen: yes
+  slidy_presentation: default
+  beamer_presentation: default
+---
+
+## Annotation using `AnnotationHub`
+
+* AnnotationHub is web resource of reference materials maintained by the 
+Bioconductor community
+* It provides a central location from where genomic reference data (e.g., FASTA,
+GTF, bed) can be downloaded
+* It included references from standard locations (e.g., UCSC, Ensembl)
+* The resource includes metadata about each resource e.g., a textual 
+description, tags, and date of modification
+* The `AnnotationHub` package creates and manages a local cache of files, 
+helping with quick and reproducible access.
+
+## Annotation using `AnnotationHub` {#less_space_after_title}
+
+* Create an annotationhub instance
+```{r, eval=FALSE}
+library(AnnotationHub)
+
+ah <- AnnotationHub()
+ah
+```
+
+```
+## AnnotationHub with 67229 records
+## # snapshotDate(): 2022-04-25
+## # $dataprovider: Ensembl, BroadInstitute, UCSC, ftp://ftp.ncbi.nlm.nih.gov/g...
+## # $species: Homo sapiens, Mus musculus, Drosophila melanogaster, Bos taurus,...
+## # $rdataclass: GRanges, TwoBitFile, BigWigFile, EnsDb, Rle, OrgDb, ChainFile...
+## # additional mcols(): taxonomyid, genome, description,
+## #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
+## #   rdatapath, sourceurl, sourcetype 
+## # retrieve records with, e.g., 'object[["AH5012"]]' 
+## 
+##              title                                                         
+##   AH5012   | Chromosome Band                                               
+##   AH5013   | STS Markers                                                   
+##   AH5014   | FISH Clones                                                   
+##   AH5015   | Recomb Rate                                                   
+##   AH5016   | ENCODE Pilot                                                  
+```
+
+
+## Annotation using `AnnotationHub` {#less_space_after_title}
+
+* Query AnnotationHub to find the resource we need
+```{r eval=FALSE}
+ahQueryResult <- query(ah, c("EnsDb", "Mus musculus", "102"))
+ahQueryResult
+```
+
+```
+## AnnotationHub with 1 record
+## # snapshotDate(): 2023-04-25
+## # names(): AH89211
+## # $dataprovider: Ensembl
+## # $species: Mus musculus
+## # $rdataclass: EnsDb
+## # $rdatadateadded: 2020-10-27
+## # $title: Ensembl 102 EnsDb for Mus musculus
+## # $description: Gene and protein annotations for Mus musculus based on Ensem...
+## # $taxonomyid: 10090
+## # $genome: GRCm38
+## # $sourcetype: ensembl
+## # $sourceurl: http://www.ensembl.org
+## # $sourcesize: NA
+## # $tags: c("102", "AHEnsDbs", "Annotation", "EnsDb", "Ensembl", "Gene",
+## #   "Protein", "Transcript") 
+## # retrieve record with 'object[["AH89211"]]'
+```
+
+## Annotation using `AnnotationHub` {#less_space_after_title}
+
+* Retrieve the data base and extract gene annotations
+```{r eval=FALSE}
+MouseEnsDb <- ahQueryResult[[1]]
+annotations <- genes(MouseEnsDb, return.type = "data.frame")
+
+colnames(annotations)
+```
+
+```
+##  [1] "gene_id"              "gene_name"            "gene_biotype"        
+##  [4] "gene_seq_start"       "gene_seq_end"         "seq_name"            
+##  [7] "seq_strand"           "seq_coord_system"     "description"         
+## [10] "gene_id_version"      "canonical_transcript" "symbol"              
+## [13] "entrezid"
+```
+
+## Annotation using `AnnotationHub` {#less_space_after_title}
+
+* Select relevant columns and join to DESeq2 results table
+```{r eval=FALSE}
+annot <- annotations %>%
+  select(GeneID = gene_id, Symbol = symbol, Description = description)
+
+annot.interaction.11 <- results.interaction.11 %>%
+  as.data.frame() %>% 
+  rownames_to_column("GeneID") %>% 
+  left_join(annot, by="GeneID")
+head(annot.interaction.11)
+```
+
+```
+## # A tibble: 20,091 × 9
+##    GeneID           baseMean log2FoldChange  lfcSE   stat  pvalue    padj Symbol
+##    <chr>               <dbl>          <dbl>  <dbl>  <dbl>   <dbl>   <dbl> <chr> 
+##  1 ENSMUSG00000000…  1103.           -0.164 0.141  -1.16  2.45e-1 0.688   Gnai3 
+##  2 ENSMUSG00000000…    58.6           0.427 0.393   1.09  2.77e-1 0.719   Cdc45 
+##  3 ENSMUSG00000000…    49.2          -0.238 0.627  -0.380 7.04e-1 0.929   Scml2 
+##  4 ENSMUSG00000000…     7.99          0.819 0.974   0.841 4.00e-1 0.803   Apoh  
+##  5 ENSMUSG00000000…  1981.            0.128 0.0998  1.29  1.99e-1 0.640   Narf  
+## # ℹ 20,086 more rows
+## # ℹ 1 more variable: Description <chr>
+```
+
+## Visualisations - p-value histograms
+
+Examples of expected overall distribution
+
+<img src="images/Pval_Hist_Expected.png" class="centerimg" style="width: 95%;">
+
+(a) anti-conservative p-values (“Hooray!”)
+(b) very low counts genes usually have large p-values
+(c) do not expect positive tests after correction
+
+# Visualising Gene Expression Data
+
+## P-value histograms
+
+Examples of unexpected overall distribution
+
+<img src="images/Pval_Hist_Unexpected.png" class="centerimg" style="width: 95%;">
+
+(a) indicates a batch effect (confounding hidden variables)
+(b) the test statistics may be inappropriate (due to strong correlation structure for instance)
+(c) discrete distribution of p-values **!!!????!?!?!**
+
+## MA plots and Volcano Plots
+
+<img src="images/MAVOL.png" class="centerimg" style="width: 99%;">
+
+## Strip Charts for Specific Genes
+
+<img src="images/StripChart.png" class="centerimg" style="width: 70%;">
+
+## Venn Diagram
+
+* Venn diagram showing overlap between differentially expressed genes for 
+different contrasts
+
+<img src="images/VennDiagram.png" class="centerimg" style="width: 65%;">
+
+## Heatmaps {#less_space_after_title}
+
+<img src="images/Heatmap.png" class="centerimg" style="width: 40%;">
+
+## Gene Coverage diagram {#less_space_after_title}
+
+<img src="images/CoverageOfGene.png" class="centerimg" style="width: 70%;">
+
