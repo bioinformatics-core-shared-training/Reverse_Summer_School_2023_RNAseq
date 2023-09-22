@@ -26,6 +26,8 @@ as practicals. The full course can be found here:
 * [Recap of Day 1](Makerere_Course_Materials/Day2_reacp.html)
 * [Annotation and Visualistation (Slides)](Makerere_Course_Materials/05_Annotation_and_Visualisation.Slides.html)
 * [Annotation and Visualistation (Practical)](Makerere_Course_Materials/05_Annotation_and_Visualisation.html)
+* [Gene Set Testing (Slides)](Makerere_Course_Materials/06_Gene_set_testing_introduction.html)
+* [Gene Set Testing (Practical)](Makerere_Course_Materials/06_Gene_set_testing.html)
 
 ## Additional Resources
 
