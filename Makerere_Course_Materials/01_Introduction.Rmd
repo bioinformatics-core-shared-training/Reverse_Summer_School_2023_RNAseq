@@ -1,5 +1,6 @@
 ---
 title: "Introduction to Differential Gene Expression Analysis with Bulk RNAseq"
+subtitle: "Preprocessing: Raw data to Gene Expression" 
 date: "September 2023"
 output:
   ioslides_presentation:
